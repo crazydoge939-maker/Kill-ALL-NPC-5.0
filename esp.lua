@@ -13,7 +13,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 300, 0, 180)
+Frame.Size = UDim2.new(0, 300, 0, 250)
 Frame.Position = UDim2.new(0, 20, 0, 20)
 Frame.BackgroundColor3 = Color3.fromRGB(40, 44, 52)
 Frame.BorderSizePixel = 0
@@ -66,7 +66,7 @@ KillCountLabel.Parent = Frame
 
 local ProgressBackground = Instance.new("Frame")
 ProgressBackground.Size = UDim2.new(1, -40, 0, 10)
-ProgressBackground.Position = UDim2.new(0, 20, 0, 165)
+ProgressBackground.Position = UDim2.new(0, 25, 0, 165)
 ProgressBackground.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 ProgressBackground.BorderSizePixel = 0
 local progressCorner = Instance.new("UICorner")
