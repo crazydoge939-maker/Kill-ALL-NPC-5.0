@@ -52,15 +52,15 @@ buttonCorner.Parent = ToggleButton
 ToggleButton.Parent = Frame
 
 local KillCountLabel = Instance.new("TextLabel")
-KillCountLabel.Size = UDim2.new(1, -40, 0, 70)
+KillCountLabel.Size = UDim2.new(1, -40, 0, 140) -- увеличено до 140 по высоте
 KillCountLabel.Position = UDim2.new(0, 20, 0, 95)
 KillCountLabel.BackgroundTransparency = 1
-KillCountLabel.Text = "Victims:\n"
+KillCountLabel.Text = "Жертвы:\n"
 KillCountLabel.TextWrapped = true
 KillCountLabel.TextXAlignment = Enum.TextXAlignment.Left
 KillCountLabel.TextYAlignment = Enum.TextYAlignment.Top
 KillCountLabel.Font = Enum.Font.Gotham
-KillCountLabel.TextSize = 14
+KillCountLabel.TextSize = 20 -- увеличено до 20
 KillCountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 KillCountLabel.Parent = Frame
 
