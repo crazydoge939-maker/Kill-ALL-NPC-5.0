@@ -45,7 +45,7 @@ ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
 ToggleButton.Font = Enum.Font.GothamBold
 ToggleButton.TextSize = 16
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Text = "Начать убийство"
+ToggleButton.Text = "Start Kill"
 local buttonCorner = Instance.new("UICorner")
 buttonCorner.CornerRadius = UDim.new(0, 8)
 buttonCorner.Parent = ToggleButton
@@ -85,10 +85,11 @@ ProgressBar.Parent = ProgressBackground
 local function toggleKilling()
     isKilling = not isKilling
     if isKilling then
-        ToggleButton.Text = "Стоп"
+        ToggleButton.Text = "Stop"
         ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        lastKillTime = tick() -- чтобы начать отсчет сразу после запуска
     else
-        ToggleButton.Text = "Начать убийство"
+        ToggleButton.Text = "Start Kill"
         ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
     end
 end
@@ -160,35 +161,33 @@ coroutine.wrap(function()
     end
 end)()
 
-local lastKillTime = 0
-
--- Новая функция: телепортировать к рандомному NPC и убить его
-local function teleportAndKillNearestNPC()
+-- Новая функция: телепортировать к случайному NPC, убить всех и телепортировать игрока чуть дальше
+local function teleportAndKillAllNPCs()
     local npcs = findHumanoids()
     if #npcs == 0 then return end
     local npc = npcs[math.random(1, #npcs)]
     local hrp = npc:FindFirstChild("HumanoidRootPart")
-    local char = npc
     local playerChar = LocalPlayer.Character
-    if not hrp or not playerChar then return end
+    local playerHRP = playerChar and playerChar:FindFirstChild("HumanoidRootPart")
+    if not hrp or not playerHRP then return end
 
     -- Расчет позиции для телепортации чуть дальше от NPC
     local npcPos = hrp.Position
-    local direction = (playerChar:FindFirstChild("HumanoidRootPart").Position - npcPos).unit
+    local playerPos = playerHRP.Position
+    local direction = (playerPos - npcPos).unit
     local teleportDistance = 10 -- дистанция, на которую телепортируемся дальше
-    local newPos = npcPos + direction * teleportDistance
+    local newPlayerPos = npcPos + direction * teleportDistance + Vector3.new(0, 3, 0)
 
     -- Телепортируем игрока
-    local playerHRP = playerChar:FindFirstChild("HumanoidRootPart")
-    if playerHRP then
-        playerHRP.CFrame = CFrame.new(newPos + Vector3.new(0, 3, 0))
-    end
+    playerHRP.CFrame = CFrame.new(newPlayerPos)
 
-    -- Убиваем NPC
-    local humanoid = npc:FindFirstChildOfClass("Humanoid")
-    if humanoid and humanoid.Health > 0 then
-        highlightNPC(npc)
-        humanoid.Health = 0
+    -- Убиваем всех NPC
+    for _, npcToKill in pairs(findHumanoids()) do
+        local humanoid = npcToKill:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.Health > 0 then
+            highlightNPC(npcToKill)
+            humanoid.Health = 0
+        end
     end
 end
 
@@ -199,9 +198,10 @@ runService.Heartbeat:Connect(function()
         local elapsed = currentTime - lastKillTime
         local progress = math.min(elapsed / killInterval, 1)
         ProgressBar.Size = UDim2.new(progress, 0, 1, 0)
+
         if elapsed >= killInterval then
-            -- Перед убийством выбираем рандомный NPC, телепортируемся к нему и убиваем
-            teleportAndKillNearestNPC()
+            -- Каждые killInterval секунд телепортируемся и убиваем всех NPC
+            teleportAndKillAllNPCs()
             lastKillTime = currentTime
             updateKillCount()
         end
